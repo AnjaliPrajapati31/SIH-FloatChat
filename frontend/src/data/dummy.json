@@ -1,0 +1,219 @@
+[
+  {
+    "id": "AS-001",
+    "latitude": 14.345,
+    "longitude": 67.678,
+    "date": "2025-08-01 00:00",
+    "pressure": 5.0,
+    "temperature": 27.5,
+    "salinity": 35.0
+  },
+  {
+    "id": "AS-001",
+    "latitude": 14.345,
+    "longitude": 67.678,
+    "date": "2025-08-01 04:00",
+    "pressure": 5.1,
+    "temperature": 27.6,
+    "salinity": 35.1
+  },
+  {
+    "id": "AS-001",
+    "latitude": 14.345,
+    "longitude": 67.678,
+    "date": "2025-08-01 08:00",
+    "pressure": 5.2,
+    "temperature": 27.7,
+    "salinity": 35.2
+  },
+  {
+    "id": "AS-001",
+    "latitude": 14.345,
+    "longitude": 67.678,
+    "date": "2025-08-01 12:00",
+    "pressure": 5.3,
+    "temperature": 27.8,
+    "salinity": 35.3
+  },
+  {
+    "id": "AS-001",
+    "latitude": 14.345,
+    "longitude": 67.678,
+    "date": "2025-08-01 16:00",
+    "pressure": 5.4,
+    "temperature": 27.6,
+    "salinity": 35.2
+  },
+  {
+    "id": "AS-001",
+    "latitude": 14.345,
+    "longitude": 67.678,
+    "date": "2025-08-01 20:00",
+    "pressure": 5.5,
+    "temperature": 27.4,
+    "salinity": 35.1
+  },
+  {
+    "id": "AS-001",
+    "latitude": 14.345,
+    "longitude": 67.678,
+    "date": "2025-09-01 00:00",
+    "pressure": 6.0,
+    "temperature": 26.9,
+    "salinity": 35.4
+  },
+  {
+    "id": "AS-001",
+    "latitude": 14.345,
+    "longitude": 67.678,
+    "date": "2025-09-01 04:00",
+    "pressure": 6.1,
+    "temperature": 27.0,
+    "salinity": 35.3
+  },
+  {
+    "id": "AS-001",
+    "latitude": 14.345,
+    "longitude": 67.678,
+    "date": "2025-09-01 08:00",
+    "pressure": 6.2,
+    "temperature": 27.2,
+    "salinity": 35.5
+  },
+  {
+    "id": "AS-001",
+    "latitude": 14.345,
+    "longitude": 67.678,
+    "date": "2025-09-01 12:00",
+    "pressure": 6.3,
+    "temperature": 27.1,
+    "salinity": 35.6
+  },
+  {
+    "id": "AS-001",
+    "latitude": 14.345,
+    "longitude": 67.678,
+    "date": "2025-09-01 16:00",
+    "pressure": 6.4,
+    "temperature": 27.0,
+    "salinity": 35.4
+  },
+  {
+    "id": "AS-001",
+    "latitude": 14.345,
+    "longitude": 67.678,
+    "date": "2025-09-01 20:00",
+    "pressure": 6.5,
+    "temperature": 26.8,
+    "salinity": 35.3
+  },
+
+  {
+    "id": "BOB-001",
+    "latitude": 16.500,
+    "longitude": 89.500,
+    "date": "2025-08-01 00:00",
+    "pressure": 5.0,
+    "temperature": 28.6,
+    "salinity": 34.7
+  },
+  {
+    "id": "BOB-001",
+    "latitude": 16.500,
+    "longitude": 89.500,
+    "date": "2025-08-01 04:00",
+    "pressure": 5.1,
+    "temperature": 28.5,
+    "salinity": 34.8
+  },
+  {
+    "id": "BOB-001",
+    "latitude": 16.500,
+    "longitude": 89.500,
+    "date": "2025-08-01 08:00",
+    "pressure": 5.2,
+    "temperature": 28.4,
+    "salinity": 34.9
+  },
+  {
+    "id": "BOB-001",
+    "latitude": 16.500,
+    "longitude": 89.500,
+    "date": "2025-08-01 12:00",
+    "pressure": 5.3,
+    "temperature": 28.3,
+    "salinity": 34.9
+  },
+  {
+    "id": "BOB-001",
+    "latitude": 16.500,
+    "longitude": 89.500,
+    "date": "2025-08-01 16:00",
+    "pressure": 5.4,
+    "temperature": 28.2,
+    "salinity": 34.8
+  },
+  {
+    "id": "BOB-001",
+    "latitude": 16.500,
+    "longitude": 89.500,
+    "date": "2025-08-01 20:00",
+    "pressure": 5.5,
+    "temperature": 28.1,
+    "salinity": 34.7
+  },
+  {
+    "id": "BOB-001",
+    "latitude": 16.500,
+    "longitude": 89.500,
+    "date": "2025-09-01 00:00",
+    "pressure": 6.0,
+    "temperature": 28.0,
+    "salinity": 35.0
+  },
+  {
+    "id": "BOB-001",
+    "latitude": 16.500,
+    "longitude": 89.500,
+    "date": "2025-09-01 04:00",
+    "pressure": 6.1,
+    "temperature": 27.9,
+    "salinity": 35.1
+  },
+  {
+    "id": "BOB-001",
+    "latitude": 16.500,
+    "longitude": 89.500,
+    "date": "2025-09-01 08:00",
+    "pressure": 6.2,
+    "temperature": 27.8,
+    "salinity": 35.2
+  },
+  {
+    "id": "BOB-001",
+    "latitude": 16.500,
+    "longitude": 89.500,
+    "date": "2025-09-01 12:00",
+    "pressure": 6.3,
+    "temperature": 27.7,
+    "salinity": 35.2
+  },
+  {
+    "id": "BOB-001",
+    "latitude": 16.500,
+    "longitude": 89.500,
+    "date": "2025-09-01 16:00",
+    "pressure": 6.4,
+    "temperature": 27.6,
+    "salinity": 35.1
+  },
+  {
+    "id": "BOB-001",
+    "latitude": 16.500,
+    "longitude": 89.500,
+    "date": "2025-09-01 20:00",
+    "pressure": 6.5,
+    "temperature": 27.5,
+    "salinity": 35.0
+  }
+]

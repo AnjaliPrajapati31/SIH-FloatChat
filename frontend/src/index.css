@@ -1,0 +1,39 @@
+@import "tailwindcss";
+:root{
+--left-width: 360px;
+}
+html,body,#root{height:100%; margin:0}
+body{font-family: Inter, system-ui, sans-serif}
+
+
+.app-grid{
+display:grid;
+grid-template-columns: var(--left-width) 1fr;
+grid-template-rows: 1fr;
+height:100vh;
+}
+.left-panel{
+border-right:1px solid #ddd;
+padding:12px;
+box-sizing:border-box;
+background:#fafafa;
+}
+.right-panel{
+display:flex;
+flex-direction:column;
+}
+.map-area{flex:1; min-height:50%;}
+.chart-area{flex:1; min-height:50%; border-top:1px solid #eee;}
+
+
+.chatbox{display:flex;flex-direction:column;height:100%}
+.messages{flex:1;overflow:auto;padding:8px}
+.msg{margin:6px 0;padding:8px;border-radius:6px;max-width:90%}
+.msg.user{align-self:flex-end;background:#d1e7ff}
+.msg.bot{align-self:flex-start;background:#f1f1f1}
+.chat-input{display:flex;padding:8px;border-top:1px solid #eee}
+.chat-input input{flex:1;padding:8px;border:1px solid #ccc;border-radius:4px;margin-right:8px}
+.chat-input button{padding:8px 12px}
+
+
+.leaflet-container{height:100%;width:100%}
