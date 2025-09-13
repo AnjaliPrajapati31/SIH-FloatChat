@@ -5,7 +5,7 @@ export default function Chatbox({ onSend }) {
   const [messages, setMessages] = useState([
     {
       from: "bot",
-      text: 'Type: "temperature", "salinity", or "comparison temperature/salinity"',
+      text: 'Commands: "temperature/salinity/pressure/depth", "comparison [param]", "compare floats [id1] [id2]", "buoy [id]", "help"',
     },
   ]);
 
@@ -44,19 +44,19 @@ export default function Chatbox({ onSend }) {
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Type a command..."
+          placeholder="Type a command... (try 'help')"
         />
         <button type="submit">Send</button>
       </form>
 
-      {/* Styles */}
+      {/* Styles - same as before */}
       <style jsx>{`
         .chatbox-container {
           display: flex;
           flex-direction: column;
-          width: 100%; /* Take full width of left panel */
-          height: 100%; /* Take full height of the panel */
-          border-radius: 0; /* No floating rounded corners */
+          width: 100%;
+          height: 100%;
+          border-radius: 0;
           overflow: hidden;
           background: #f9f9f9;
         }

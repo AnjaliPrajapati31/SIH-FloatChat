@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
-import * as EL from "esri-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -13,6 +12,23 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 
+// Create custom colored markers
+const createColoredIcon = (color) => {
+  return L.divIcon({
+    className: 'custom-div-icon',
+    html: `<div style="
+      background-color: ${color}; 
+      width: 25px; 
+      height: 25px; 
+      border-radius: 50%; 
+      border: 2px solid white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    "></div>`,
+    iconSize: [25, 25],
+    iconAnchor: [12, 12]
+  });
+};
+
 function MapActions({ lat, lon, highlight }) {
   const map = useMap();
   useEffect(() => {
@@ -23,28 +39,40 @@ function MapActions({ lat, lon, highlight }) {
   return null;
 }
 
-export default function MapView({ data = [], highlight = false, onToggleTheme }) {
-  // Get unique positions (one per cycle)
+export default function MapView({ data = [], highlight = false, onToggleTheme, selectedBuoys = [] }) {
+  // Get unique positions (one per cycle per buoy)
   const uniquePositions = [];
-  const seenDates = new Set();
+  const seenCombos = new Set();
   
   data.forEach(d => {
-    if (!seenDates.has(d.date)) {
-      seenDates.add(d.date);
+    const combo = `${d.id}-${d.date}`;
+    if (!seenCombos.has(combo)) {
+      seenCombos.add(combo);
       uniquePositions.push(d);
     }
+  });
+
+  // Group positions by buoy
+  const buoyPositions = {};
+  uniquePositions.forEach(pos => {
+    if (!buoyPositions[pos.id]) {
+      buoyPositions[pos.id] = [];
+    }
+    buoyPositions[pos.id].push(pos);
   });
 
   const first = uniquePositions[0];
   const lat = first?.latitude ?? 0;
   const lon = first?.longitude ?? 0;
 
+  const colors = ['#ff0000', '#0000ff', '#00ff00', '#ff6600', '#9900cc'];
+
   return (
     <div className="flex flex-col h-full w-full overflow-hidden shadow-lg">
       {/* Local Header */}
       <div className="flex items-center justify-between px-4 py-2 shadow bg-gray-100 dark:bg-gray-800">
         <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-          Float Map - Buoy {uniquePositions[0]?.id || 'Unknown'}
+          Float Map - {selectedBuoys.length > 0 ? `Buoys ${selectedBuoys.join(', ')}` : 'All Buoys'}
         </h2>
         <button
           onClick={onToggleTheme}
@@ -58,7 +86,7 @@ export default function MapView({ data = [], highlight = false, onToggleTheme })
       <div className="flex-1">
         <MapContainer
           center={[lat, lon]}
-          zoom={6}
+          zoom={4}
           style={{ height: "100%", width: "100%" }}
         >
           <TileLayer
@@ -66,19 +94,32 @@ export default function MapView({ data = [], highlight = false, onToggleTheme })
             attribution='Tiles © <a href="https://www.esri.com/">Esri</a>'
           />
 
-          {uniquePositions.map((d, i) => (
-            <Marker key={i} position={[d.latitude, d.longitude]}>
-              <Popup>
-                <div>
-                  <div><strong>Buoy ID:</strong> {d.id}</div>
-                  <div><strong>Date:</strong> {new Date(d.date).toLocaleString()}</div>
-                  <div><strong>Lat:</strong> {d.latitude.toFixed(4)}</div>
-                  <div><strong>Lon:</strong> {d.longitude.toFixed(4)}</div>
-                  <div><strong>Measurements:</strong> Multiple depth profiles</div>
-                </div>
-              </Popup>
-            </Marker>
-          ))}
+          {Object.entries(buoyPositions).map(([buoyId, positions], buoyIndex) => {
+            const isSelected = selectedBuoys.length === 0 || selectedBuoys.includes(buoyId);
+            const color = selectedBuoys.includes(buoyId) ? colors[selectedBuoys.indexOf(buoyId)] : '#666666';
+            const icon = isSelected ? createColoredIcon(color) : createColoredIcon('#cccccc');
+            
+            return positions.map((d, posIndex) => (
+              <Marker 
+                key={`${buoyId}-${posIndex}`} 
+                position={[d.latitude, d.longitude]}
+                icon={icon}
+                opacity={isSelected ? 1 : 0.5}
+              >
+                <Popup>
+                  <div>
+                    <div><strong>Buoy ID:</strong> {d.id}</div>
+                    <div><strong>Date:</strong> {new Date(d.date).toLocaleString()}</div>
+                    <div><strong>Lat:</strong> {d.latitude.toFixed(4)}</div>
+                    <div><strong>Lon:</strong> {d.longitude.toFixed(4)}</div>
+                    <div><strong>Max Pressure:</strong> {d.pressure ? `${d.pressure.toFixed(1)} dbar` : 'N/A'}</div>
+                    <div><strong>Est. Max Depth:</strong> {d.pressure ? `${(d.pressure * 1.019716).toFixed(0)} m` : 'N/A'}</div>
+                    <div><strong>Status:</strong> {isSelected ? 'Selected' : 'Available'}</div>
+                  </div>
+                </Popup>
+              </Marker>
+            ))
+          })}
 
           <MapActions lat={lat} lon={lon} highlight={highlight} />
         </MapContainer>
