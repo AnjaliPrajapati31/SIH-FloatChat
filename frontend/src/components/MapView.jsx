@@ -70,13 +70,14 @@ export default function MapView({ data = [], highlight = false, onToggleTheme, s
   return (
     <div className="flex flex-col h-full w-full overflow-hidden shadow-lg">
       {/* Local Header */}
-      <div className="flex items-center justify-between px-4 py-2 shadow bg-gray-100 dark:bg-gray-800">
-        <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+      
+      <div className="floatmap-header flex items-center justify-between px-4 py-2 shadow">
+        <h2 className="title">
           Float Map - {selectedBuoys.length > 0 ? `Buoys ${selectedBuoys.join(', ')}` : 'All Buoys'}
         </h2>
         <button
           onClick={onToggleTheme}
-          className="px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+          className="theme-toggle-btn px-3 py-1 rounded-lg"
         >
           Toggle Theme
         </button>
