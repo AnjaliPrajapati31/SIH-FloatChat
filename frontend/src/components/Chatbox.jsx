@@ -3,7 +3,10 @@ import React, { useState } from "react";
 export default function Chatbox({ onSend }) {
   const [text, setText] = useState("");
   const [messages, setMessages] = useState([
-    { from: "bot", text: 'Type: "temperature", "salinity"' },
+    {
+      from: "bot",
+      text: 'Type: "temperature", "salinity", or "comparison temperature/salinity"',
+    },
   ]);
 
   function submit(e) {
@@ -49,13 +52,13 @@ export default function Chatbox({ onSend }) {
       {/* Styles */}
       <style jsx>{`
         .chatbox-container {
-        display: flex;
-        flex-direction: column;
-        width: 100%;        /* Take full width of left panel */
-        height: 100%;       /* Take full height of the panel */
-        border-radius: 0;   /* No floating rounded corners */
-        overflow: hidden;
-        background: #f9f9f9;
+          display: flex;
+          flex-direction: column;
+          width: 100%; /* Take full width of left panel */
+          height: 100%; /* Take full height of the panel */
+          border-radius: 0; /* No floating rounded corners */
+          overflow: hidden;
+          background: #f9f9f9;
         }
 
         .chatbox-header {
@@ -75,7 +78,7 @@ export default function Chatbox({ onSend }) {
         }
 
         .toggle-btn {
-          background: #0077b6 ;         
+          background: #0077b6;
           color: white;
           border: none;
           border-radius: 6px;

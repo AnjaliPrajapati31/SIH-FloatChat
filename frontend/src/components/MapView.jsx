@@ -24,16 +24,27 @@ function MapActions({ lat, lon, highlight }) {
 }
 
 export default function MapView({ data = [], highlight = false, onToggleTheme }) {
-  const first = data[0];
+  // Get unique positions (one per cycle)
+  const uniquePositions = [];
+  const seenDates = new Set();
+  
+  data.forEach(d => {
+    if (!seenDates.has(d.date)) {
+      seenDates.add(d.date);
+      uniquePositions.push(d);
+    }
+  });
+
+  const first = uniquePositions[0];
   const lat = first?.latitude ?? 0;
   const lon = first?.longitude ?? 0;
 
   return (
-    <div className="flex flex-col h-full w-full  overflow-hidden shadow-lg">
+    <div className="flex flex-col h-full w-full overflow-hidden shadow-lg">
       {/* Local Header */}
       <div className="flex items-center justify-between px-4 py-2 shadow bg-gray-100 dark:bg-gray-800">
         <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-          Float Map
+          Float Map - Buoy {uniquePositions[0]?.id || 'Unknown'}
         </h2>
         <button
           onClick={onToggleTheme}
@@ -47,22 +58,23 @@ export default function MapView({ data = [], highlight = false, onToggleTheme })
       <div className="flex-1">
         <MapContainer
           center={[lat, lon]}
-          zoom={4}
+          zoom={6}
           style={{ height: "100%", width: "100%" }}
         >
-          {/* <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" /> */}
           <TileLayer
-          url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-          attribution='Tiles © <a href="https://www.esri.com/">Esri</a>'
-         />
+            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+            attribution='Tiles © <a href="https://www.esri.com/">Esri</a>'
+          />
 
-          {data.map((d, i) => (
+          {uniquePositions.map((d, i) => (
             <Marker key={i} position={[d.latitude, d.longitude]}>
               <Popup>
                 <div>
-                  <div><strong>Date:</strong> {d.date}</div>
-                  <div><strong>Lat:</strong> {d.latitude}</div>
-                  <div><strong>Lon:</strong> {d.longitude}</div>
+                  <div><strong>Buoy ID:</strong> {d.id}</div>
+                  <div><strong>Date:</strong> {new Date(d.date).toLocaleString()}</div>
+                  <div><strong>Lat:</strong> {d.latitude.toFixed(4)}</div>
+                  <div><strong>Lon:</strong> {d.longitude.toFixed(4)}</div>
+                  <div><strong>Measurements:</strong> Multiple depth profiles</div>
                 </div>
               </Popup>
             </Marker>

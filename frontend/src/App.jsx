@@ -4,103 +4,110 @@ import MapView from './components/MapView'
 import ChartView from './components/ChartView'
 import dummy from './data/dummy.json'
 
+// Transform the new JSON structure to flat array format for compatibility
+function transformData(jsonData) {
+  const transformedData = []
+  const buoyId = jsonData.id
+  
+  Object.entries(jsonData.cycles).forEach(([timestamp, cycleData]) => {
+    // For each measurement in the cycle, create a data point
+    cycleData.measurements.forEach((measurement, index) => {
+      transformedData.push({
+        id: buoyId,
+        date: timestamp,
+        latitude: cycleData.latitude,
+        longitude: cycleData.longitude,
+        pressure: measurement.pressure,
+        temperature: measurement.temperature,
+        salinity: measurement.salinity,
+        // Add a unique identifier for each measurement
+        measurementIndex: index
+      })
+    })
+  })
+  
+  return transformedData
+}
 
 export default function App() {
-const [chartMode, setChartMode] = useState('temperature') // 'temperature' or 'salinity'
-const [highlightNearest, setHighlightNearest] = useState(false)
-const [darkMode, setDarkMode] = useState(false);
-const [buoyCompare, setBuoyCompare] = useState(null) 
-// e.g. { buoy1: "AS-001", buoy2: "BOB-001" }
+  const [chartMode, setChartMode] = useState('temperature')
+  const [highlightNearest, setHighlightNearest] = useState(false)
+  const [darkMode, setDarkMode] = useState(false)
+  const [buoyCompare, setBuoyCompare] = useState(null)
 
+  // Transform the data
+  const transformedData = transformData(dummy)
 
-const toggleTheme = () => {
+  const toggleTheme = () => {
     setDarkMode((prev) => !prev);
     document.documentElement.classList.toggle("dark");
   };
 
+  const [compareMode, setCompareMode] = useState(false)
 
-// Chat commands handler
-const [compareMode, setCompareMode] = useState(false)
+  function handleCommand(cmd) {
+    const t = cmd.trim().toLowerCase()
 
-function handleCommand(cmd) {
-  const t = cmd.trim().toLowerCase()
+    // Since we only have one buoy now, update the comparison logic
+    if (t.includes("comparison")) {
+      if (t.includes("salinity")) {
+        setChartMode("salinity")
+        setCompareMode(true)
+        setBuoyCompare(null)
+        return "Showing salinity comparison between different time periods."
+      }
+      if (t.includes("temperature")) {
+        setChartMode("temperature")
+        setCompareMode(true)
+        setBuoyCompare(null)
+        return "Showing temperature comparison between different time periods."
+      }
+      setCompareMode(true)
+      setBuoyCompare(null)
+      return `Showing comparison of ${chartMode} between different time periods.`
+    }
 
-  // Case: "comparison AS-001 and BOB-001 temperature"
-  if (t.includes("comparison") && t.includes("and")) {
-    const parts = t.split(" ")
-    const buoy1 = parts.find(p => p.includes("as-"))?.toUpperCase()
-    const buoy2 = parts.find(p => p.includes("bob-"))?.toUpperCase()
-
+    // Single modes
     if (t.includes("salinity")) {
       setChartMode("salinity")
-      setBuoyCompare({ buoy1, buoy2 })
-      setCompareMode(false) // not Aug vs Sep, but buoy vs buoy
-      return `Showing salinity comparison between ${buoy1} and ${buoy2}.`
-    }
-    if (t.includes("temperature")) {
-      setChartMode("temperature")
-      setBuoyCompare({ buoy1, buoy2 })
       setCompareMode(false)
-      return `Showing temperature comparison between ${buoy1} and ${buoy2}.`
-    }
-  }
-
-  // Case: "comparison temperature" or "comparison salinity" (old logic)
-  if (t.includes("comparison")) {
-    if (t.includes("salinity")) {
-      setChartMode("salinity")
-      setCompareMode(true)
       setBuoyCompare(null)
-      return "Showing comparison of salinity (Aug 1 vs Sep 1)."
+      return "Showing salinity data."
     }
     if (t.includes("temperature")) {
       setChartMode("temperature")
-      setCompareMode(true)
+      setCompareMode(false)
       setBuoyCompare(null)
-      return "Showing comparison of temperature (Aug 1 vs Sep 1)."
+      return "Showing temperature data."
     }
-    setCompareMode(true)
-    setBuoyCompare(null)
-    return `Showing comparison of ${chartMode} (Aug 1 vs Sep 1).`
+
+    return `Unknown command: ${cmd}`
   }
 
-  // Single-day modes
-  if (t.includes("salinity")) {
-    setChartMode("salinity")
-    setCompareMode(false)
-    setBuoyCompare(null)
-    return "Showing salinity chart (Sep 1)."
-  }
-  if (t.includes("temperature")) {
-    setChartMode("temperature")
-    setCompareMode(false)
-    setBuoyCompare(null)
-    return "Showing temperature chart (Sep 1)."
-  }
+  return (
+    <div className="app-grid">
+      <aside className="left-panel">
+        <Chatbox onSend={handleCommand} />
+      </aside>
 
-  return `Unknown command: ${cmd}`
-}
-
-return (
-<div className="app-grid">
-<aside className="left-panel">
-<Chatbox onSend={handleCommand} />
-</aside>
-
-
-<main className="right-panel">
-<div className="map-area">
-<MapView
-data={dummy}
-highlight={highlightNearest}
-onToggleTheme={toggleTheme}
-/> 
-
-</div>
-<div className="chart-area">
-<ChartView data={dummy} mode={chartMode} compare={compareMode} buoyCompare={buoyCompare} />
-</div>
-</main>
-</div>
-)
+      <main className="right-panel">
+        <div className="map-area">
+          <MapView
+            data={transformedData}
+            highlight={highlightNearest}
+            onToggleTheme={toggleTheme}
+          /> 
+        </div>
+        <div className="chart-area">
+          <ChartView 
+            data={transformedData} 
+            mode={chartMode} 
+            compare={compareMode} 
+            buoyCompare={buoyCompare}
+            originalData={dummy} // Pass original data for more advanced processing if needed
+          />
+        </div>
+      </main>
+    </div>
+  )
 }
