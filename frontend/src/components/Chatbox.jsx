@@ -3,7 +3,7 @@ import React, { useState } from "react";
 export default function Chatbox({ onSend }) {
   const [text, setText] = useState("");
   const [messages, setMessages] = useState([
-    { from: "bot", text: 'Type: "temperature", "salinity", or "nearest floats"' },
+    { from: "bot", text: 'Type: "temperature", "salinity"' },
   ]);
 
   function submit(e) {
@@ -75,7 +75,7 @@ export default function Chatbox({ onSend }) {
         }
 
         .toggle-btn {
-          background: #0077b6 ;
+          background: #0077b6 ;         
           color: white;
           border: none;
           border-radius: 6px;
