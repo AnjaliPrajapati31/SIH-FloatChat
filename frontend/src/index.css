@@ -100,6 +100,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 10px 15px;
+  border-radius: 20px;
 }
 
 .chatbox-header h3 {
@@ -128,7 +129,7 @@ body {
 }
 
 .msg {
-  max-width: 75%;
+  max-width: 85%;
   padding: 10px 14px;
   border-radius: 10px;
   font-size: 14px;
@@ -154,13 +155,14 @@ body {
   display: flex;
   padding: 10px;
   border-top: 1px solid var(--border-color);
+  border-radius: 20px;
   background: var(--chat-input-bg);
 }
 
 .chat-input input {
   flex: 1;
   padding: 10px;
-  border-radius: 8px;
+  border-radius: 20px;
   border: 1px solid var(--border-color);
   outline: none;
   background: transparent;
@@ -178,7 +180,7 @@ body {
   color: white;
   border: none;
   padding: 8px 12px;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
 }
 
@@ -186,27 +188,30 @@ body {
   background: #005f86;
 }
 
-/* Force Float Map header to use custom theme */
 .floatmap-header {
-  background: #1e1f23;       /* --bg-header */
-  color: #e5e5e5;           /* --text-color */
-  border-bottom: 1px solid #3a3b40; /* --border-color */
+  background: var(--bg-header);      /* matches theme */
+  color: var(--text-color);          /* switches automatically */
+  border-bottom: 1px solid var(--border-color);
 }
 
 .floatmap-header .title {
-  font-size: 1.125rem; /* text-lg */
+  font-size: 1.125rem;
   font-weight: 600;
-  color: #e5e5e5;      /* always light text */
+  color: var(--text-color);          /* dynamic text color */
 }
 
 .floatmap-header .theme-toggle-btn {
-  background: #2c2d31; /* match header background */
-  color: #e5e5e5;
-  border: 1px solid #3a3b40;
+  background: var(--bg-panel);       /* panel background */
+  color: var(--text-color);          /* dynamic text color */
+  border: 1px solid var(--border-color);
   transition: background 0.2s ease, color 0.2s ease;
 }
 
-.floatmap-header .theme-toggle-btn:hover {
-  background: #3a3b40;
-  color: #fff;
+.profile-icon {
+  font-size: 28px;               /* slightly bigger */
+  color: var(--text-color);      /* adapts to theme */
+  cursor: pointer;
+  transition: color 0.2s ease;
 }
+
+ 
