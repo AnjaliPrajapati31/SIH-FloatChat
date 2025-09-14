@@ -208,10 +208,21 @@ body {
 }
 
 .profile-icon {
-  font-size: 28px;               /* slightly bigger */
-  color: var(--text-color);      /* adapts to theme */
+  font-size: 28px;
+  color: var(--text-color);
   cursor: pointer;
   transition: color 0.2s ease;
 }
 
- 
+.profile-icon:hover {
+  color: #4f81ff;
+}
+
+.dropdown-menu {
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
