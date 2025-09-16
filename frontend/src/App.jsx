@@ -39,11 +39,11 @@ export default function App() {
   const [chartMode, setChartMode] = useState("temperature");
   const [highlightNearest, setHighlightNearest] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
-  const [selectedBuoys, setSelectedBuoys] = useState([]); // Array of selected buoy IDs
+  const [selectedBuoys, setSelectedBuoys] = useState([]);
   const [compareMode, setCompareMode] = useState(false);
   const [compareTwoFloats, setCompareTwoFloats] = useState(false);
+  const [showChart, setShowChart] = useState(false); // <-- NEW
 
-  // Transform the data and get available buoys
   const transformedData = transformData(dummy);
   const availableBuoys = getAvailableBuoys(dummy);
 
@@ -53,6 +53,7 @@ export default function App() {
   };
 
   function handleCommand(cmd) {
+    setShowChart(true);
     const t = cmd.trim().toLowerCase();
 
     // Compare two different floats
@@ -216,14 +217,16 @@ Available buoys: ${availableBuoys.join(", ")}`;
           />
         </div>
         <div className="chart-area">
-          <ChartView
-            data={transformedData}
-            mode={chartMode}
-            compare={compareMode}
-            compareTwoFloats={compareTwoFloats}
-            selectedBuoys={selectedBuoys}
-            originalData={dummy}
-          />
+          {showChart && ( // <-- Only render after query
+            <ChartView
+              data={transformedData}
+              mode={chartMode}
+              compare={compareMode}
+              compareTwoFloats={compareTwoFloats}
+              selectedBuoys={selectedBuoys}
+              originalData={dummy}
+            />
+          )}
         </div>
       </main>
     </div>
