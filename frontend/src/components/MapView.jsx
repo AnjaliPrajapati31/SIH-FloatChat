@@ -1,158 +1,224 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useMemo, memo } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-// fix default icon paths for many bundlers
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-});
+// Fix default icon paths - do this only once
+if (!L.Icon.Default.prototype._getIconUrl) {
+  delete L.Icon.Default.prototype._getIconUrl;
+  L.Icon.Default.mergeOptions({
+    iconRetinaUrl:
+      "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+    iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+    shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+  });
+}
 
-// Create custom colored markers
+// Memoized icon creation - create only when needed
+const iconCache = new Map();
 const createColoredIcon = (color) => {
-  return L.divIcon({
-    className: 'custom-div-icon',
+  if (iconCache.has(color)) {
+    return iconCache.get(color);
+  }
+
+  const icon = L.divIcon({
+    className: "custom-div-icon",
     html: `<div style="
       background-color: ${color}; 
-      width: 25px; 
-      height: 25px; 
+      width: 22px; 
+      height: 22px; 
       border-radius: 50%; 
-      border: 2px solid white;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      border: 3px solid white;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
     "></div>`,
-    iconSize: [25, 25],
-    iconAnchor: [12, 12]
+    iconSize: [22, 22],
+    iconAnchor: [11, 11],
   });
+
+  iconCache.set(color, icon);
+  return icon;
 };
 
-function MapActions({ lat, lon, highlight }) {
+// Optimized MapActions component
+const MapActions = memo(({ center, zoom }) => {
   const map = useMap();
+  const lastCenter = useRef(null);
+
   useEffect(() => {
-    if (highlight) {
-      map.setView([lat, lon], 8, { animate: true });
+    if (
+      center &&
+      (!lastCenter.current ||
+        lastCenter.current[0] !== center[0] ||
+        lastCenter.current[1] !== center[1])
+    ) {
+      map.setView(center, zoom, { animate: true });
+      lastCenter.current = center;
     }
-  }, [highlight, lat, lon, map]);
+  }, [center, zoom, map]);
+
   return null;
-}
+});
 
-export default function MapView({ data = [], highlight = false, onToggleTheme, selectedBuoys = [] }) {
-  // Get unique positions (one per cycle per buoy)
-  const uniquePositions = [];
-  const seenCombos = new Set();
-  const [open, setOpen] = useState(false);
+// Main MapView component
+const MapView = memo(({ data = [], selectedBuoys = [] }) => {
+  const mapRef = useRef(null);
+  const colors = [
+    "#ff4444",
+    "#0077b6",
+    "#00aa44",
+    "#ff6600",
+    "#9900cc",
+    "#ff1493",
+  ];
 
-  
-  data.forEach(d => {
-    const combo = `${d.id}-${d.date}`;
-    if (!seenCombos.has(combo)) {
-      seenCombos.add(combo);
-      uniquePositions.push(d);
+  // Memoize processed data to avoid recalculation
+  const { uniquePositions, mapCenter, mapZoom } = useMemo(() => {
+    // Get unique positions efficiently
+    const positions = [];
+    const seenCombos = new Set();
+
+    data.forEach((d) => {
+      const combo = `${d.id}-${d.date}`;
+      if (!seenCombos.has(combo) && d.latitude && d.longitude) {
+        seenCombos.add(combo);
+        positions.push({
+          ...d,
+          key: combo, // Add unique key for React
+        });
+      }
+    });
+
+    // Calculate map center and zoom
+    let center = [20, 60]; // Default center
+    let zoom = 4;
+
+    if (positions.length > 0) {
+      if (selectedBuoys.length > 0) {
+        // Focus on selected buoys
+        const selectedPositions = positions.filter((p) =>
+          selectedBuoys.includes(p.id)
+        );
+        if (selectedPositions.length > 0) {
+          const lats = selectedPositions.map((p) => p.latitude);
+          const lngs = selectedPositions.map((p) => p.longitude);
+          center = [
+            (Math.min(...lats) + Math.max(...lats)) / 2,
+            (Math.min(...lngs) + Math.max(...lngs)) / 2,
+          ];
+          zoom = selectedPositions.length === 1 ? 8 : 6;
+        }
+      } else {
+        // Show all data
+        const lats = positions.map((p) => p.latitude);
+        const lngs = positions.map((p) => p.longitude);
+        center = [
+          (Math.min(...lats) + Math.max(...lats)) / 2,
+          (Math.min(...lngs) + Math.max(...lngs)) / 2,
+        ];
+        zoom = 5;
+      }
     }
-  });
 
-  // Group positions by buoy
-  const buoyPositions = {};
-  uniquePositions.forEach(pos => {
-    if (!buoyPositions[pos.id]) {
-      buoyPositions[pos.id] = [];
-    }
-    buoyPositions[pos.id].push(pos);
-  });
+    return { uniquePositions: positions, mapCenter: center, mapZoom: zoom };
+  }, [data, selectedBuoys]);
 
-  const first = uniquePositions[0];
-  const lat = first?.latitude ?? 0;
-  const lon = first?.longitude ?? 0;
+  // Memoize markers to prevent unnecessary re-renders
+  const markers = useMemo(() => {
+    return uniquePositions.map((d, index) => {
+      const isSelected =
+        selectedBuoys.length === 0 || selectedBuoys.includes(d.id);
+      const colorIndex = selectedBuoys.indexOf(d.id);
+      const color =
+        isSelected && colorIndex !== -1
+          ? colors[colorIndex % colors.length]
+          : isSelected
+          ? "#0077b6"
+          : "#cccccc";
 
-  const colors = ['#ff0000', '#0000ff', '#00ff00', '#ff6600', '#9900cc'];
+      const icon = createColoredIcon(color);
+
+      return (
+        <Marker
+          key={d.key}
+          position={[d.latitude, d.longitude]}
+          icon={icon}
+          opacity={isSelected ? 1 : 0.5}
+        >
+          <Popup>
+            <div
+              style={{ fontSize: "12px", minWidth: "160px", lineHeight: "1.4" }}
+            >
+              <div style={{ fontWeight: "bold", marginBottom: "4px" }}>
+                🌊 Buoy {d.id}
+              </div>
+              <div>
+                <strong>📅 Date:</strong>{" "}
+                {new Date(d.date).toLocaleDateString()}
+              </div>
+              <div>
+                <strong>📍 Position:</strong> {d.latitude.toFixed(3)},{" "}
+                {d.longitude.toFixed(3)}
+              </div>
+              {d.pressure && (
+                <>
+                  <div>
+                    <strong>🌊 Max Pressure:</strong> {d.pressure.toFixed(1)}{" "}
+                    dbar
+                  </div>
+                  <div>
+                    <strong>📏 Est. Depth:</strong>{" "}
+                    {(d.pressure * 1.019716).toFixed(0)} m
+                  </div>
+                </>
+              )}
+            </div>
+          </Popup>
+        </Marker>
+      );
+    });
+  }, [uniquePositions, selectedBuoys, colors]);
 
   return (
-<div className="flex flex-col h-full w-full overflow-hidden shadow-lg">
-
-  <div className="floatmap-header relative flex items-center justify-between px-4 py-2 shadow">
-  <h2 className="title">
-    Float Map - {selectedBuoys.length > 0 ? `Buoys ${selectedBuoys.join(', ')}` : 'All Buoys'}
-  </h2>
-
-  <div className="flex items-center gap-3 relative">
-    {/* Profile Icon */}
-    <span
-      className="material-symbols-outlined profile-icon"
-      onClick={() => setOpen(!open)}
+    <div
+      className="map-container"
+      style={{ height: "100%", width: "100%", position: "relative" }}
     >
-      account_circle
-    </span>
+      <MapContainer
+        ref={mapRef}
+        center={mapCenter}
+        zoom={mapZoom}
+        style={{ height: "100%", width: "100%" }}
+        zoomControl={true}
+        attributionControl={false}
+        preferCanvas={true}
+        updateWhenIdle={true}
+        updateWhenZooming={false}
+      >
+        {/* Satellite Imagery Layer */}
+        <TileLayer
+          url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+          attribution="© Esri, Maxar, Earthstar Geographics"
+          maxZoom={18}
+          updateWhenIdle={true}
+          keepBuffer={4}
+        />
 
-    {/* Theme Toggle */}
-    <button
-      onClick={onToggleTheme}
-      className="theme-toggle-btn px-3 py-1 rounded-lg"
-    >
-      {/* Toggle Icon */}
-      🌙
-    </button>
+        {/* Hybrid layer with labels (optional overlay) */}
+        <TileLayer
+          url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
+          attribution=""
+          maxZoom={18}
+          opacity={0.8}
+        />
 
-    {/* Dropdown */}
-    {open && (
-      <div className="dropdown-menu absolute right-0 top-12 bg-[var(--bg-panel)] border border-[var(--border-color)] rounded-lg shadow-lg w-40 z-[9999]">
-        <div className="px-4 py-2 text-[var(--text-color)] font-medium">
-          Adarsh Jha
-        </div>
-        <button className="w-full text-left px-4 py-2 hover:bg-[var(--border-color)] text-[var(--text-color)]">
-          Logout
-        </button>
-      </div>
-    )}
-  </div>
-</div>
+        {markers}
 
-
-
-      {/* Map Area */}
-      <div className="flex-1">
-        <MapContainer
-          center={[lat, lon]}
-          zoom={4}
-          style={{ height: "100%", width: "100%" }}
-        >
-          <TileLayer
-            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-            attribution='Tiles © <a href="https://www.esri.com/">Esri</a>'
-          />
-
-          {Object.entries(buoyPositions).map(([buoyId, positions], buoyIndex) => {
-            const isSelected = selectedBuoys.length === 0 || selectedBuoys.includes(buoyId);
-            const color = selectedBuoys.includes(buoyId) ? colors[selectedBuoys.indexOf(buoyId)] : '#666666';
-            const icon = isSelected ? createColoredIcon(color) : createColoredIcon('#cccccc');
-            
-            return positions.map((d, posIndex) => (
-              <Marker 
-                key={`${buoyId}-${posIndex}`} 
-                position={[d.latitude, d.longitude]}
-                icon={icon}
-                opacity={isSelected ? 1 : 0.5}
-              >
-                <Popup>
-                  <div>
-                    <div><strong>Buoy ID:</strong> {d.id}</div>
-                    <div><strong>Date:</strong> {new Date(d.date).toLocaleString()}</div>
-                    <div><strong>Lat:</strong> {d.latitude.toFixed(4)}</div>
-                    <div><strong>Lon:</strong> {d.longitude.toFixed(4)}</div>
-                    <div><strong>Max Pressure:</strong> {d.pressure ? `${d.pressure.toFixed(1)} dbar` : 'N/A'}</div>
-                    <div><strong>Est. Max Depth:</strong> {d.pressure ? `${(d.pressure * 1.019716).toFixed(0)} m` : 'N/A'}</div>
-                    <div><strong>Status:</strong> {isSelected ? 'Selected' : 'Available'}</div>
-                  </div>
-                </Popup>
-              </Marker>
-            ))
-          })}
-
-          <MapActions lat={lat} lon={lon} highlight={highlight} />
-        </MapContainer>
-      </div>
+        <MapActions center={mapCenter} zoom={mapZoom} />
+      </MapContainer>
     </div>
   );
-}
+});
+
+MapView.displayName = "MapView";
+
+export default MapView;
