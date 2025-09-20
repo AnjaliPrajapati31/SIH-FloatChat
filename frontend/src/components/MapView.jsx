@@ -39,7 +39,6 @@ const createColoredIcon = (color) => {
   return icon;
 };
 
-// Optimized MapActions component
 const MapActions = memo(({ center, zoom }) => {
   const map = useMap();
   const lastCenter = useRef(null);
@@ -59,7 +58,6 @@ const MapActions = memo(({ center, zoom }) => {
   return null;
 });
 
-// Main MapView component
 const MapView = memo(({ data = [], selectedBuoys = [] }) => {
   const mapRef = useRef(null);
   const colors = [
@@ -73,7 +71,6 @@ const MapView = memo(({ data = [], selectedBuoys = [] }) => {
 
   // Memoize processed data to avoid recalculation
   const { uniquePositions, mapCenter, mapZoom } = useMemo(() => {
-    // Get unique positions efficiently
     const positions = [];
     const seenCombos = new Set();
 
@@ -88,7 +85,6 @@ const MapView = memo(({ data = [], selectedBuoys = [] }) => {
       }
     });
 
-    // Calculate map center and zoom
     let center = [20, 60]; // Default center
     let zoom = 4;
 
@@ -177,6 +173,18 @@ const MapView = memo(({ data = [], selectedBuoys = [] }) => {
       );
     });
   }, [uniquePositions, selectedBuoys, colors]);
+
+  useEffect(() => {
+    const map = mapRef.current?.leafletElement;
+    if (!map) return;
+
+    const bounds = L.latLngBounds(
+      uniquePositions.map((d) => [d.latitude, d.longitude])
+    );
+
+    // Apply padding to the bounds so markers aren't at the edges
+    map.fitBounds(bounds, { padding: [50, 50] });
+  }, [uniquePositions]);
 
   return (
     <div

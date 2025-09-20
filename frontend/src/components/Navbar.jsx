@@ -18,7 +18,7 @@ export default function Navbar({
           </button>
         )}
         <div className="navbar-title">
-          <span className="app-icon"></span>
+          <img src="/logo.png" alt="Logo" className="app-icon" />
           <h1>{title}</h1>
         </div>
       </div>

@@ -403,7 +403,7 @@ Available buoys: ${availableBuoys.join(", ")}`;
                   {/* Map Section */}
                   {mapInitialized && (
                     <div className="map-section">
-                      <div className="map-header">
+                      {/* <div className="map-header">
                         <h4>
                           🛰️ Satellite View
                           {selectedBuoys.length > 0 && (
@@ -419,7 +419,7 @@ Available buoys: ${availableBuoys.join(", ")}`;
                             </span>
                           )}
                         </h4>
-                      </div>
+                      </div> */}
                       <div className="map-area-compact">
                         {isMapLoading ? (
                           <div className="map-loading">
@@ -438,9 +438,9 @@ Available buoys: ${availableBuoys.join(", ")}`;
                   {/* Chart Section */}
                   {showChart && (
                     <div className="chart-section">
-                      <div className="chart-header">
+                      {/* <div className="chart-header">
                         <h4>📊 {getVisualizationTitle()}</h4>
-                      </div>
+                      </div> */}
                       <div className="chart-area">
                         {isChartLoading ? (
                           <div className="chart-loading">Loading chart...</div>
