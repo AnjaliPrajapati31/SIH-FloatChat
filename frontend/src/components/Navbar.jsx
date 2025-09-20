@@ -18,7 +18,7 @@ export default function Navbar({
           </button>
         )}
         <div className="navbar-title">
-          <span className="app-icon">🌊</span>
+          <span className="app-icon"></span>
           <h1>{title}</h1>
         </div>
       </div>
