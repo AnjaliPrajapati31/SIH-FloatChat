@@ -508,6 +508,27 @@ html.dark .leaflet-popup-tip {
   font-weight: 400;
 }
 
+/* Code text styling within messages */
+.code-text {
+  font-family: "Fira Code", "Consolas", "Monaco", "Courier New", monospace;
+  font-weight: 500;
+  background: var(--bg-tertiary);
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-size: 0.8em;
+  color: var(--accent-primary);
+}
+
+.msg.bot .code-text {
+  background: var(--bg-secondary);
+  color: var(--accent-primary);
+}
+
+.msg.user .code-text {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--text-inverse);
+}
+
 .chat-input {
   display: flex;
   align-items: center;
