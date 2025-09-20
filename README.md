@@ -12,7 +12,9 @@
 
 _Transforming marine research through intelligent data visualization and natural language queries_
 
-[🚀 **Live Demo**](#-getting-started) • [📊 **Features**](#-features) • [🏗️ **Architecture**](#-system-architecture) • [🤝 **Contributing**](#-contributing)
+[🚀 **Live Demo**](https://floatchat-ins.vercel.app/) • [📊 **Features**](#-features) • [🏗️ **Architecture**](#-system-architecture) • [🤝 **Contributing**](#-contributing)
+
+**🌐 Try it now: [floatchat-ins.vercel.app](https://floatchat-ins.vercel.app/)**
 
 </div>
 
@@ -21,7 +23,6 @@ _Transforming marine research through intelligent data visualization and natural
 ## 📋 Table of Contents
 
 - [✨ Features](#-features)
-- [🏆 Hackathon Story](#-hackathon-story)
 - [📐 System Architecture](#-system-architecture)
 - [⚙️ Tech Stack](#️-tech-stack)
 - [🚀 Getting Started](#-getting-started)
@@ -65,48 +66,122 @@ _Transforming marine research through intelligent data visualization and natural
 
 ---
 
-## 🏆 Hackathon Story
-
-> **Problem Statement**: Marine researchers spend 60% of their time searching through complex NetCDF datasets instead of conducting actual research. Traditional tools require extensive programming knowledge, creating barriers for domain experts.
-
-**FloatChat** revolutionizes marine data analysis by:
-
-🎯 **Democratizing Access**: Students and researchers can query "Show me temperature anomalies in the Arabian Sea during monsoon 2023" instead of writing complex SQL
-
-🚀 **Accelerating Discovery**: What took hours of data wrangling now happens in seconds through natural language
-
-🌊 **Bridging Domains**: Combines cutting-edge AI with oceanographic expertise to unlock insights from India's vast marine datasets
-
-**Impact**: Already tested with **2M+ Argo float measurements** across the Indian Ocean, helping researchers identify climate patterns 10x faster.
-
----
-
 ## 📐 System Architecture
+
+FloatChat implements a modern, scalable architecture designed for handling large-scale marine datasets with intelligent query processing capabilities.
+
+### 🏗️ **High-Level Architecture**
 
 ```mermaid
 graph TB
-    A[FTP Data Source<br/>🌐 Argo NetCDF Files] --> B[ETL Pipeline<br/>🔄 Python + xarray]
-    B --> C[Data Validation<br/>✅ QC Flags + UTC]
-    C --> D[Multi-Storage Layer<br/>🗄️ Postgres + Parquet]
-    D --> E[Vector Embeddings<br/>🧠 OpenAI + ChromaDB]
-    E --> F[RAG Engine<br/>🤖 LLM Query Processing]
-    F --> G[REST API<br/>⚡ FastAPI + JWT]
-    G --> H[React Dashboard<br/>💻 Interactive UI]
+    subgraph "🌐 Data Sources"
+        A1[Argo Float FTP Servers]
+        A2[NOAA Data Centers]
+        A3[Marine Research APIs]
+    end
 
-    H --> I[🗺️ Leaflet Maps]
-    H --> J[📊 Plotly Charts]
-    H --> K[💬 Chat Interface]
-    H --> L[🌍 Cesium 3D Globe]
+    subgraph "🔄 ETL & Processing Layer"
+        B1[Data Ingestion Service<br/>🐍 Python + Celery]
+        B2[NetCDF Parser<br/>📊 xarray + netCDF4]
+        B3[Quality Controller<br/>✅ QC Flag Validation]
+        B4[Data Normalizer<br/>🔧 Schema Transformation]
+    end
+
+    subgraph "🗄️ Storage Layer"
+        C1[PostgreSQL<br/>🐘 Relational Data]
+        C2[Apache Parquet<br/>📈 Time Series Analytics]
+        C3[ChromaDB<br/>🧠 Vector Embeddings]
+        C4[Redis<br/>⚡ Cache & Sessions]
+    end
+
+    subgraph "🤖 AI & Intelligence Layer"
+        D1[Embedding Generator<br/>🔤 OpenAI text-embedding-3]
+        D2[RAG Engine<br/>🔍 LangChain + ChromaDB]
+        D3[Query Processor<br/>💬 GPT-4 + Context]
+        D4[Response Formatter<br/>📝 Structured Output]
+    end
+
+    subgraph "⚡ API Layer"
+        E1[FastAPI Gateway<br/>🚀 REST + WebSocket]
+        E2[Authentication Service<br/>🔐 JWT + RBAC]
+        E3[Rate Limiter<br/>🛡️ Redis-based throttling]
+        E4[Data Export Service<br/>📥 CSV/JSON/NetCDF]
+    end
+
+    subgraph "💻 Frontend Layer"
+        F1[React Dashboard<br/>⚛️ Interactive UI]
+        F2[Leaflet Maps<br/>🗺️ 2D Visualization]
+        F3[Chart.js Analytics<br/>📊 Scientific Plots]
+        F4[Chat Interface<br/>💬 Natural Language]
+    end
+
+    A1 & A2 & A3 --> B1
+    B1 --> B2 --> B3 --> B4
+    B4 --> C1 & C2 & C3
+    C1 & C2 & C3 --> D1
+    D1 --> D2 --> D3 --> D4
+    C1 & C2 & D4 --> E1
+    E2 & E3 & E4 --> E1
+    E1 --> F1
+    F1 --> F2 & F3 & F4
 ```
 
-### 🔄 **Data Flow**
+### 🔄 **Data Processing Pipeline**
 
-1. **Ingestion**: Automated FTP downloads of Argo NetCDF files
-2. **Processing**: xarray-based parsing with quality validation
-3. **Normalization**: JSON schema transformation with metadata extraction
-4. **Storage**: Triple redundancy (Postgres, Parquet, Vector DB)
-5. **Intelligence**: RAG-enabled natural language processing
-6. **Presentation**: Interactive React dashboard with real-time updates
+```mermaid
+sequenceDiagram
+    participant FTP as 🌐 FTP Server
+    participant ETL as 🔄 ETL Service
+    participant DB as 🗄️ Storage Layer
+    participant AI as 🤖 AI Engine
+    participant API as ⚡ FastAPI
+    participant UI as 💻 React UI
+
+    FTP->>ETL: Download .nc files
+    ETL->>ETL: Parse & validate NetCDF
+    ETL->>DB: Store normalized data
+    ETL->>AI: Generate embeddings
+
+    UI->>API: Natural language query
+    API->>AI: Process with RAG
+    AI->>DB: Retrieve relevant data
+    AI->>API: Formatted response
+    API->>UI: Visualization data
+    UI->>UI: Render charts & maps
+```
+
+### 🏛️ **Microservices Architecture**
+
+| Service                 | Technology         | Responsibility                 | Scaling               |
+| ----------------------- | ------------------ | ------------------------------ | --------------------- |
+| **🔄 Data Ingestion**   | Python + Celery    | FTP downloads, file processing | Horizontal (workers)  |
+| **🧠 AI Processing**    | LangChain + OpenAI | RAG queries, embeddings        | Vertical (GPU/CPU)    |
+| **⚡ API Gateway**      | FastAPI + Nginx    | Request routing, auth          | Horizontal (replicas) |
+| **💻 Frontend**         | React + Vercel     | User interface, visualization  | CDN distribution      |
+| **🗄️ Database Cluster** | PostgreSQL + Redis | Data persistence, caching      | Read replicas         |
+
+### 🔐 **Security Architecture**
+
+```mermaid
+graph LR
+    A[User Request] --> B[🛡️ WAF]
+    B --> C[🔐 JWT Auth]
+    C --> D[📊 Rate Limiter]
+    D --> E[⚡ API Gateway]
+    E --> F[🔒 Service Mesh]
+    F --> G[📊 Database]
+
+    H[🔑 Secrets Manager] --> E
+    I[📝 Audit Logs] --> G
+```
+
+### 📊 **Performance Optimizations**
+
+- **🚀 Lazy Loading**: Components and data loaded on demand
+- **📦 Data Compression**: Gzip + Brotli for API responses
+- **⚡ Query Caching**: Redis-based intelligent caching layer
+- **🔍 Database Indexing**: Optimized for geospatial and temporal queries
+- **📈 CDN Distribution**: Global content delivery for static assets
 
 ---
 
