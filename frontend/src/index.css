@@ -98,7 +98,157 @@ pre,
   font-weight: 300;
 }
 
-/* Dropdown items with Fira Sans */
+/* Navbar Styles */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-primary);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  min-height: 60px;
+  font-family: "Fira Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Roboto", sans-serif;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  position: relative;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: 1px solid var(--border-primary);
+  border-radius: 0.5rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.back-btn:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--accent-primary);
+}
+
+.navbar-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.app-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 0.5rem;
+  object-fit: cover;
+}
+
+.navbar-title h1 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: "Fira Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Roboto", sans-serif;
+  white-space: nowrap;
+}
+
+.theme-toggle,
+.profile-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: 1px solid var(--border-primary);
+  border-radius: 0.5rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 20px;
+}
+
+.theme-toggle:hover,
+.profile-btn:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+.profile-section {
+  position: relative;
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 200px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  padding: 0.5rem;
+  z-index: 1001;
+  animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.profile-info {
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.profile-name {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  font-family: "Fira Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Roboto", sans-serif;
+  margin-bottom: 0.25rem;
+}
+
+.profile-email {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-family: "Fira Code", "Consolas", "Monaco", "Courier New", monospace;
+  font-weight: 300;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: var(--border-primary);
+  margin: 0.5rem 0;
+}
+
 .dropdown-item {
   display: flex;
   align-items: center;
@@ -116,6 +266,22 @@ pre,
   font-family: "Fira Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
     "Roboto", sans-serif;
   font-weight: 400;
+}
+
+.dropdown-item:hover {
+  background: var(--bg-tertiary);
+}
+
+.dropdown-item.danger {
+  color: var(--danger-color, #ef4444);
+}
+
+.dropdown-item.danger:hover {
+  background: var(--danger-bg, rgba(239, 68, 68, 0.1));
+}
+
+.dropdown-item span.material-symbols-outlined {
+  font-size: 18px;
 }
 
 /* App Layout */
@@ -268,6 +434,31 @@ pre,
 
   .chart-section {
     flex: 1;
+  }
+
+  .navbar {
+    padding: 0.5rem 1rem;
+  }
+
+  .navbar-title h1 {
+    font-size: 1.125rem;
+  }
+
+  .app-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .theme-toggle,
+  .profile-btn,
+  .back-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .profile-dropdown {
+    min-width: 180px;
+    right: -10px;
   }
 }
 
